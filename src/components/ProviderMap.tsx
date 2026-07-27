@@ -101,10 +101,10 @@ export function ProviderMap({
 
     radiusCircle.current = L.circle([userLocation.lat, userLocation.lng], {
       radius: nearbyRadiusKm * 1000,
-      color: "#e86028",
+      color: "#0e8a74",
       weight: 2,
       opacity: 0.75,
-      fillColor: "#e86028",
+      fillColor: "#0e8a74",
       fillOpacity: 0.12,
     }).addTo(map);
 
@@ -277,9 +277,9 @@ export function ChatFab({ onClick }: { onClick: () => void }) {
           d="M7 18.5 4.5 20.2V7.8A2.8 2.8 0 0 1 7.3 5h9.4A2.8 2.8 0 0 1 19.5 7.8v6.4a2.8 2.8 0 0 1-2.8 2.8H9.2L7 18.5Z"
           fill="#fff"
         />
-        <circle cx="9" cy="11" r="1" fill="#e86028" />
-        <circle cx="12" cy="11" r="1" fill="#e86028" />
-        <circle cx="15" cy="11" r="1" fill="#e86028" />
+        <circle cx="9" cy="11" r="1" fill="#0e8a74" />
+        <circle cx="12" cy="11" r="1" fill="#0e8a74" />
+        <circle cx="15" cy="11" r="1" fill="#0e8a74" />
       </svg>
     </button>
   );

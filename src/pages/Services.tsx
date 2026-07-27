@@ -4,6 +4,7 @@ import { Navbar } from "../components/Navbar";
 import { SiteFooter } from "../components/SiteFooter";
 import { ProviderMap } from "../components/ProviderMap";
 import { UserAvatar } from "../components/UserAvatar";
+import { IconChart, IconMapPin } from "../components/Icons";
 import { CATEGORIES, type ServiceCategory } from "../data/providers";
 import { useLocation } from "../contexts/LocationContext";
 import { usePlatform } from "../contexts/PlatformContext";
@@ -15,6 +16,32 @@ function parseCategory(value: string | null): (typeof CATEGORIES)[number] {
     return value as (typeof CATEGORIES)[number];
   }
   return "All Services";
+}
+
+function IconSearch({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconNear({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="4" />
+    </svg>
+  );
+}
+
+function IconFilters({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M4 6h16M7 12h10M10 18h4" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 export function ServicesPage() {
@@ -31,8 +58,8 @@ export function ServicesPage() {
   const [nearMe, setNearMe] = useState(!hasUrlFilter);
   const [view, setView] = useState<"list" | "map">("list");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Keep filters in sync when Explore / nav lands with new query params
   useEffect(() => {
     setQuery(urlQ);
     setCategory(urlCategory);
@@ -66,68 +93,86 @@ export function ServicesPage() {
   }, [category, query, nearMe, providers, location, nearbyRadiusKm]);
 
   return (
-    <div>
+    <div className="tf-browse">
       <Navbar />
-      <main className="tf-page">
-        <header className="tf-page-header">
-          <h1>Find Your Perfect Service Provider</h1>
-          <p className="tf-muted">
-            Verified mechanics, technicians, drivers, and home experts near{" "}
-            <strong>{location.label}</strong>.
-          </p>
-          <div className="tf-chip-row" style={{ marginTop: "0.75rem" }}>
-            {areas.slice(0, 6).map((a) => (
-              <button
-                key={a.id}
-                type="button"
-                className={`tf-chip ${location.areaId === a.id ? "tf-chip-active" : ""}`}
-                onClick={() => setAreaById(a.id)}
-              >
-                {a.name}
-              </button>
-            ))}
-            <button
-              type="button"
-              className="tf-chip"
-              onClick={detectLocation}
-              disabled={geoStatus === "prompting"}
-            >
-              {geoStatus === "prompting" ? "Detecting…" : "Use GPS"}
-            </button>
-          </div>
+      <main className="tf-page tf-browse-page">
+        <header className="tf-browse-header">
+          <h1>Browse verified professionals near you</h1>
         </header>
 
-        <div className="tf-search-bar">
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search service, skill, or area…"
-            aria-label="Search providers"
-          />
+        <aside className="tf-browse-trend" aria-live="polite">
+          <span className="tf-browse-trend-icon" aria-hidden>
+            <IconChart className="tf-inline-icon" />
+          </span>
+          <p>
+            <strong>Trending:</strong> It looks like AC repair is really heating up near{" "}
+            {location.label} — providers are responding fast.
+          </p>
+        </aside>
+
+        <div className="tf-browse-toolbar">
+          <label className="tf-browse-search">
+            <IconSearch className="tf-inline-icon" />
+            <span className="tf-sr-only">Search services or pro</span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search services or pro"
+            />
+          </label>
           <button
             type="button"
-            className={`tf-chip ${nearMe ? "tf-chip-active" : ""}`}
+            className={`tf-browse-tool ${nearMe ? "is-on" : ""}`}
             onClick={() => setNearMe((v) => !v)}
           >
+            <IconNear className="tf-inline-icon" />
             Near Me
           </button>
           <button
             type="button"
-            className={`tf-chip ${view === "list" ? "tf-chip-active" : ""}`}
-            onClick={() => setView("list")}
+            className={`tf-browse-tool ${view === "map" ? "is-on" : ""}`}
+            onClick={() => setView((v) => (v === "map" ? "list" : "map"))}
           >
-            List
+            <IconMapPin className="tf-inline-icon" />
+            Map
           </button>
           <button
             type="button"
-            className={`tf-chip ${view === "map" ? "tf-chip-active" : ""}`}
-            onClick={() => setView("map")}
+            className={`tf-browse-tool ${showFilters ? "is-on" : ""}`}
+            onClick={() => setShowFilters((v) => !v)}
           >
-            Map
+            <IconFilters className="tf-inline-icon" />
+            Filters
           </button>
         </div>
 
-        <div className="tf-chip-row" role="tablist" aria-label="Service categories">
+        {showFilters && (
+          <div className="tf-browse-filters">
+            <p className="tf-muted">Area</p>
+            <div className="tf-chip-row tf-chip-scroll">
+              {areas.map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  className={`tf-chip ${location.areaId === a.id ? "tf-chip-active" : ""}`}
+                  onClick={() => setAreaById(a.id)}
+                >
+                  {a.name}
+                </button>
+              ))}
+              <button
+                type="button"
+                className="tf-chip"
+                onClick={detectLocation}
+                disabled={geoStatus === "prompting"}
+              >
+                {geoStatus === "prompting" ? "Detecting…" : "Use GPS"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="tf-chip-row tf-chip-scroll" role="tablist" aria-label="Service categories">
           {CATEGORIES.map((c) => (
             <button
               key={c}
@@ -142,10 +187,12 @@ export function ServicesPage() {
           ))}
         </div>
 
-        <p className="tf-muted" style={{ margin: "1rem 0" }}>
-          {filtered.length} provider{filtered.length === 1 ? "" : "s"}
-          {category !== "All Services" ? ` in ${category as ServiceCategory}` : ""}
-          {nearMe ? ` within ${nearbyRadiusKm} km of ${location.label}` : " across Kampala"}
+        <h2 className="tf-browse-count">
+          {filtered.length} Provider{filtered.length === 1 ? "" : "s"} Found
+        </h2>
+        <p className="tf-muted tf-browse-sub">
+          {category !== "All Services" ? `${category as ServiceCategory} · ` : ""}
+          {nearMe ? `within ${nearbyRadiusKm} km of ${location.label}` : "across Kampala"}
         </p>
 
         {filtered.length === 0 ? (
