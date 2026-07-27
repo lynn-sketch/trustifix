@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { useLocation } from "react-router-dom";
 import { IconBolt, LiveFeedIcon } from "./Icons";
 import { LIVE_FEED } from "../data/landing";
 
-/** Fixed live-activity toast (hidden on the one-page home). */
+/** Fixed live-activity toast on every page (viewport, not page bottom). */
 export function GlobalLiveActivity() {
-  const { pathname } = useLocation();
   const [feedIndex, setFeedIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const feed = LIVE_FEED[feedIndex];
-  const hideOnHome = pathname === "/" || pathname === "";
 
   useEffect(() => {
-    if (paused || hideOnHome) return;
+    if (paused) return;
     const id = window.setInterval(() => {
       setFeedIndex((i) => (i + 1) % LIVE_FEED.length);
     }, 4500);
     return () => window.clearInterval(id);
-  }, [paused, hideOnHome]);
-
-  if (hideOnHome) return null;
+  }, [paused]);
 
   return createPortal(
     <aside
