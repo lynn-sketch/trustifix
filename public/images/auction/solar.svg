@@ -1,0 +1,6 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560" fill="none">
+  <rect width="800" height="560" fill="#14532d"/>
+  <polygon points="400,120 520,280 280,280" fill="#F5B301"/>
+  <rect x="340" y="280" width="120" height="100" rx="8" fill="#fff" opacity=".85"/>
+  <text x="400" y="440" text-anchor="middle" fill="#fff" font-family="Arial" font-size="26" font-weight="700">Solar Panel</text>
+</svg>

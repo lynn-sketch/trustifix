@@ -1,0 +1,60 @@
+Implement Phase 1 — Secure marketplace core for TrustiFix. Do NOT add MFA/TOTP, device fingerprinting, RabbitMQ, custom WebSockets, or trust-score engines yet.
+
+BRAND COLORS (keep consistent everywhere):
+- Primary teal: #0F9F8A
+- Primary hover: #0D8A78
+- Primary dark: #0B6F61
+- Primary soft bg: #E6F7F3
+- Ink: #0F172A
+- Muted text: #64748B
+- Border: #E2E8F0
+- Surface: #F8FAFC
+- Background: #FFFFFF
+- Star/gold: #F5B301
+- Danger: #DC2626
+
+PHASE 1 SCOPE:
+
+1) Design tokens
+Add CSS variables for the colors above and use them for buttons, badges, links, and primary CTAs. Keep the existing TrustiFix look (teal primary, clean white).
+
+2) Router-level protected route guards
+Today role checks are only inside pages. Add a ProtectedRoute (or equivalent) used in App.tsx/Routes:
+- /dashboard → authenticated customer (or admin)
+- /provider-dashboard → provider or admin
+- /become-provider → authenticated
+- /messages, /notifications, /wallet → authenticated
+- /admin → admin only
+- /auction → authenticated
+Unauthenticated users redirect to /auth with return path. Unauthorized roles redirect home.
+
+3) Supabase RLS hardening (critical)
+Ensure providers only read/update their own jobs/profile; customers only their bookings; admin via role claim. Never rely on client redirects alone for /admin, wallet, or payouts. Fix existing security issues if related.
+
+4) Booking lifecycle (core product)
+Implement booking statuses and allowed transitions:
+pending → accepted | cancelled
+accepted → en_route | cancelled | disputed
+en_route → in_progress | cancelled | disputed
+in_progress → completed | disputed | cancelled
+completed → disputed
+disputed → completed | cancelled
+
+Wire this into customer dashboard + provider dashboard with a visible status timeline. Creating a booking from ProviderProfile should create a pending booking.
+
+5) Wallet hold/release (minimal)
+On booking accept or create: hold amount (or mark payment_hold). On completed: release to provider minus platform fee. On cancelled/disputed: follow simple refund/hold rules and show in /wallet transactions.
+
+6) Reviews + dispute entry
+After completed booking, customer can leave a review. Either party can open a dispute from a booking; it appears in admin Requires Attention.
+
+7) Verification basics
+Require email verification for booking. Add phone verification flag on profile (UI + field). Show verified badges on provider profiles when true.
+
+8) Realtime (use existing Supabase Realtime only)
+Booking status changes and new messages should notify via /notifications. Do not build custom socket infra.
+
+OUT OF SCOPE FOR THIS PASS:
+Magic-link-only auth, TOTP MFA, device fingerprinting, session revoke dashboard, progressive behavioral rate limits, RabbitMQ/SQS, offline action replay queues, full granular RBAC matrix UI, auction improvements, blog/events.
+
+Deliver working UI + database policies for the above. Keep mobile responsive. Preserve existing pages and brand.

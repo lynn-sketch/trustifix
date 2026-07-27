@@ -1,0 +1,9 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560" fill="none">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="800" y2="560"><stop stop-color="#0F9F8A"/><stop offset="1" stop-color="#0B6F61"/></linearGradient></defs>
+  <rect width="800" height="560" fill="url(#g)"/>
+  <rect x="220" y="150" width="360" height="220" rx="24" fill="#fff" opacity=".92"/>
+  <circle cx="320" cy="260" r="48" fill="#E8913A"/>
+  <circle cx="480" cy="260" r="48" fill="#0F9F8A"/>
+  <rect x="360" y="248" width="80" height="24" rx="8" fill="#334155"/>
+  <text x="400" y="420" text-anchor="middle" fill="#fff" font-family="Arial" font-size="28" font-weight="700">AC Gauge Set</text>
+</svg>

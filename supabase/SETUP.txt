@@ -1,0 +1,25 @@
+# TrustiFix backend setup (Supabase)
+
+## Why Supabase?
+Auth + Postgres + Row Level Security + Realtime + Storage in one free-tier project.
+Same stack Lovable used for TrustyFix Connect.
+
+## Alternatives (if you change later)
+- Firebase — fast auth, weaker relational bookings/wallet
+- Appwrite — open-source BaaS, more self-host work
+- Custom Nest/Express + Postgres — max control, slowest to ship
+- Neon/PlanetScale + Clerk — split DB and auth
+
+## Connect in 10 minutes
+1. Create project at https://supabase.com
+2. Project Settings → API → copy Project URL + anon/publishable key
+3. In this repo:
+   copy .env.example .env.local
+   paste URL and key into .env.local
+4. Supabase Dashboard → SQL Editor → paste supabase/schema.sql → Run
+5. Restart Vite: npm run dev
+6. Auth page badge should read "Cloud · Supabase"
+
+## Next coding step
+Wire email/password (or magic link) auth to replace demo sign-in, then migrate
+bookings/wallet/messages from localStorage to Supabase tables.

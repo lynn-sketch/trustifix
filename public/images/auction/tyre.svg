@@ -1,0 +1,7 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560" fill="none">
+  <rect width="800" height="560" fill="#0f172a"/>
+  <ellipse cx="400" cy="280" rx="160" ry="90" fill="#64748b"/>
+  <ellipse cx="400" cy="280" rx="90" ry="50" fill="#94a3b8"/>
+  <rect x="370" y="180" width="60" height="40" rx="8" fill="#0F9F8A"/>
+  <text x="400" y="430" text-anchor="middle" fill="#fff" font-family="Arial" font-size="28" font-weight="700">Car Tyre Set</text>
+</svg>

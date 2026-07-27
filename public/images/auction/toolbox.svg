@@ -1,0 +1,7 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560" fill="none">
+  <rect width="800" height="560" fill="#422006"/>
+  <rect x="280" y="150" width="240" height="200" rx="12" fill="#E8913A"/>
+  <rect x="300" y="180" width="200" height="24" rx="6" fill="#fff" opacity=".35"/>
+  <rect x="300" y="220" width="140" height="24" rx="6" fill="#fff" opacity=".25"/>
+  <text x="400" y="420" text-anchor="middle" fill="#fff" font-family="Arial" font-size="26" font-weight="700">Toolbox</text>
+</svg>
