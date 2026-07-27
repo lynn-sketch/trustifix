@@ -1803,7 +1803,7 @@ select {
   margin: 0 auto;
 }
 
-/*  Blog magazine layout  */
+/* Blog magazine layout */
 .tf-blog-page {
   background:
     radial-gradient(ellipse 80% 50% at 10% -10%, rgba(232, 96, 40, 0.14), transparent 55%),
@@ -4849,7 +4849,7 @@ select {
 
 
 
-/*  Homepage scroll float reveals + new info sections  */
+/* Homepage scroll float reveals */
 [data-reveal] {
   opacity: 0;
   transform: translateY(36px);
@@ -5129,7 +5129,7 @@ select {
   }
 }
 
-/*  Route page slide transitions  */
+/* Route page slide transitions */
 .tf-route-shell {
   min-height: 100vh;
   animation-duration: 0.48s;
@@ -5318,7 +5318,7 @@ select {
   font-size: 0.95rem;
 }
 
-/* Real Leaflet map  dark canvas so pins & avatars read clearly */
+/* Real Leaflet map */
 .tf-nearby-map-live {
   min-height: 280px;
   background: #0b172a;
@@ -5416,7 +5416,7 @@ select {
   background: #1a2f50 !important;
 }
 
-/* Dark strip under map  avatar chips pop against navy */
+/* Dark strip under map  avatar chips pop against navy */
 .tf-nearby:has(.tf-nearby-map-live) {
   background: #0b172a;
   border-radius: 22px;
