@@ -3536,7 +3536,7 @@ select {
   margin: 0 auto;
   padding: 2rem 1.5rem;
   border-radius: 20px;
-  background: linear-gradient(145deg, #e86028, #0b7a6a);
+  background: linear-gradient(145deg, #e86028, #c0481c);
   color: #fff;
   text-align: center;
 }
@@ -3948,7 +3948,7 @@ select {
 
 /* Site footer */
 .tf-footer {
-  background: #0c1f1c;
+  background: var(--tf-navy-deep);
   color: rgba(255, 255, 255, 0.78);
   margin-top: 2rem;
 }
@@ -5452,4 +5452,220 @@ select {
 
 .tf-nearby:has(.tf-nearby-map-live) .tf-nearby-card-wrap {
   margin: 0 0.5rem 0.75rem;
+}
+
+/* One-page home - fits a single viewport */
+.tf-home-onepage {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 55% 50% at 90% 20%, rgba(232, 96, 40, 0.18), transparent 55%),
+    linear-gradient(165deg, #070b14 0%, #0b172a 45%, #142440 100%);
+}
+
+.tf-home-onepage .tf-nav {
+  flex-shrink: 0;
+}
+
+.tf-onepage {
+  flex: 1;
+  min-height: 0;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.75rem 1.1rem 1rem;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.95fr) minmax(0, 1.15fr);
+  gap: 1.25rem;
+  align-items: stretch;
+  color: #fff;
+}
+
+.tf-onepage-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 0;
+}
+
+.tf-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 3.2vw, 2.15rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.tf-brand-mark .tf-inline-icon {
+  color: var(--tf-primary);
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.tf-onepage-copy h1 {
+  margin: 0;
+  font-size: clamp(1.55rem, 3.4vw, 2.45rem);
+  color: #fff;
+  max-width: 16ch;
+}
+
+.tf-onepage-copy h1 span {
+  color: var(--tf-primary);
+}
+
+.tf-onepage-lead {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.98rem;
+  max-width: 32rem;
+  line-height: 1.45;
+}
+
+.tf-onepage .tf-lp-search {
+  margin: 0.15rem 0 0;
+  max-width: 26rem;
+}
+
+.tf-onepage .tf-lp-search input {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: transparent;
+  color: var(--tf-ink);
+}
+
+.tf-onepage .tf-btn-primary {
+  background: var(--tf-primary);
+  border-color: var(--tf-primary);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(232, 96, 40, 0.35);
+}
+
+.tf-onepage .tf-btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+.tf-onepage .tf-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.tf-onepage-meta {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  margin-top: 0.15rem;
+}
+
+.tf-onepage-pin {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(232, 96, 40, 0.18);
+  color: var(--tf-primary);
+  flex-shrink: 0;
+}
+
+.tf-onepage-meta strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.tf-onepage-meta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.tf-onepage .tf-link-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.tf-onepage-areas {
+  margin: 0;
+}
+
+.tf-onepage-auth {
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tf-onepage-auth a {
+  color: var(--tf-primary);
+  font-weight: 700;
+}
+
+.tf-onepage-map {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.tf-onepage-map .tf-nearby {
+  flex: 1;
+  min-height: 280px;
+  height: 100%;
+  margin: 0;
+  border-radius: 0;
+}
+
+.tf-onepage-map-hint {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 400;
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(11, 23, 42, 0.88);
+  border: 1px solid rgba(232, 96, 40, 0.35);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .tf-home-onepage {
+    min-height: auto;
+  }
+
+  .tf-onepage {
+    grid-template-columns: 1fr;
+    padding-bottom: 1.25rem;
+  }
+
+  .tf-onepage-copy h1 {
+    max-width: none;
+  }
+
+  .tf-onepage-map {
+    min-height: 52vh;
+  }
+
+  .tf-onepage-map .tf-nearby {
+    min-height: 52vh;
+  }
 }

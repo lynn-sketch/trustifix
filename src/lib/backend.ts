@@ -1,11 +1,16 @@
+import { isApiConfigured } from "./api";
 import { isSupabaseConfigured } from "./supabase";
 
-export type BackendMode = "local" | "supabase";
+export type BackendMode = "local" | "api" | "supabase";
 
 export function getBackendMode(): BackendMode {
-  return isSupabaseConfigured ? "supabase" : "local";
+  if (isSupabaseConfigured) return "supabase";
+  if (isApiConfigured) return "api";
+  return "local";
 }
 
 export function backendLabel(mode: BackendMode = getBackendMode()): string {
-  return mode === "supabase" ? "Supabase connected" : "Local demo (localStorage)";
+  if (mode === "supabase") return "Supabase connected";
+  if (mode === "api") return "API backend connected";
+  return "Local demo (localStorage)";
 }

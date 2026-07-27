@@ -7,6 +7,14 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import {
+  apiLogin,
+  apiMe,
+  apiSignUp,
+  apiUpdateMe,
+  isApiConfigured,
+  setApiToken,
+} from "../lib/api";
 import type { UserRole } from "../lib/rbac";
 import { hasPermission, type Permission } from "../lib/rbac";
 import { AUTH_KEY, loadJson, saveJson } from "../lib/storage";
@@ -48,9 +56,11 @@ type AuthContextValue = {
   signInWithPassword: (
     login: string,
     password: string,
-  ) => { error: string | null; role?: Exclude<UserRole, "guest"> };
+  ) =>
+    | { error: string | null; role?: Exclude<UserRole, "guest"> }
+    | Promise<{ error: string | null; role?: Exclude<UserRole, "guest"> }>;
   /** Create a customer account. Returns error or null. */
-  signUp: (input: SignUpInput) => string | null;
+  signUp: (input: SignUpInput) => string | null | Promise<string | null>;
   signOut: () => void;
   updateProfile: (
     patch: Partial<Pick<AuthUser, "fullName" | "avatarUrl" | "phone" | "username">>,
@@ -149,6 +159,7 @@ function validateSignUp(input: SignUpInput): string | null {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => {
+    if (isApiConfigured) return null;
     const saved = loadJson<AuthUser | null>(AUTH_KEY, null);
     if (!saved) return null;
     // Backfill fields for older sessions
@@ -160,10 +171,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
+    if (isApiConfigured) return;
     saveJson(AUTH_KEY, user);
   }, [user]);
 
+  useEffect(() => {
+    if (!isApiConfigured) return;
+    let cancelled = false;
+    apiMe()
+      .then(({ user: me }) => {
+        if (!cancelled) setUser(me);
+      })
+      .catch(() => {
+        setApiToken(null);
+        if (!cancelled) setUser(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const applyUser = useCallback((base: AuthUser) => {
+    if (isApiConfigured) {
+      setUser(base);
+      return;
+    }
     const saved = loadJson<AuthUser | null>(AUTH_KEY, null);
     if (saved?.id === base.id) {
       setUser({
@@ -188,9 +220,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signUp = useCallback(
-    (input: SignUpInput) => {
+    async (input: SignUpInput) => {
       const err = validateSignUp(input);
       if (err) return err;
+
+      if (isApiConfigured) {
+        try {
+          const me = await apiSignUp(input);
+          applyUser(me);
+          return null;
+        } catch (e) {
+          return e instanceof Error ? e.message : "Could not create account.";
+        }
+      }
 
       const fullName = input.fullName.trim();
       const username = input.username.trim().toLowerCase();
@@ -211,7 +253,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
       if (taken) return "An account with that username, email, or phone already exists.";
 
-      // Also block demo emails
       const demoHit = Object.values(DEMO_USERS).some(
         (d) => d.email.toLowerCase() === email || d.username.toLowerCase() === username,
       );
@@ -237,7 +278,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signInWithPassword = useCallback(
-    (login: string, password: string) => {
+    async (login: string, password: string) => {
       const key = login.trim().toLowerCase();
       const phoneKey = normalizePhone(login);
       const p = password;
@@ -245,7 +286,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: "Enter your email/username/phone and password." };
       }
 
-      // Built-in admin
+      if (isApiConfigured) {
+        try {
+          const me = await apiLogin(login, password);
+          applyUser(me);
+          return { error: null, role: me.role };
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : "Invalid login or password." };
+        }
+      }
+
       if (
         (key === ADMIN_LOGIN.username || key === DEMO_USERS.admin.email.toLowerCase()) &&
         p === ADMIN_LOGIN.password
@@ -254,7 +304,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: null, role: "admin" as const };
       }
 
-      // Demo shortcuts
       for (const demo of Object.values(DEMO_USERS)) {
         if (
           (key === demo.email.toLowerCase() ||
@@ -284,7 +333,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [applyUser],
   );
 
-  const signOut = useCallback(() => setUser(null), []);
+  const signOut = useCallback(() => {
+    setApiToken(null);
+    setUser(null);
+  }, []);
 
   const updateProfile = useCallback(
     (patch: Partial<Pick<AuthUser, "fullName" | "avatarUrl" | "phone" | "username">>) => {
@@ -298,7 +350,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           phone: patch.phone !== undefined ? normalizePhone(patch.phone) : prev.phone,
         };
 
-        // Persist into accounts store when this is a registered user
+        if (isApiConfigured) {
+          void apiUpdateMe(patch).catch(() => {
+            /* keep optimistic UI */
+          });
+          return next;
+        }
+
         const accounts = loadAccounts();
         const idx = accounts.findIndex((a) => a.id === prev.id);
         if (idx >= 0) {

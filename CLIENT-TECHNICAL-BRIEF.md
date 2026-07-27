@@ -56,6 +56,7 @@ The system follows the original Lovable marketplace concept (roles, bookings, wa
 | Mode | What it means |
 |---|---|
 | **Current default: Local demo** | Data is stored in the browser (`localStorage`). Ideal for demos and iteration—no server required. |
+| **API backend (new)** | Express server in `/server` with auth, providers, bookings, wallet, panic alerts. Run locally; deploy separately from GitHub Pages. |
 | **Production path: Supabase** | Schema and env wiring are prepared. Connecting Supabase enables real cloud auth, database, and server-side rules. |
 
 **Client-friendly summary:**  
@@ -89,7 +90,7 @@ Access control and trust workflows are built into the product. Server-enforced s
 | Phase | Scope | Outcome |
 |---|---|---|
 | **Phase 1 — Done** | Full UI + marketplace flows + admin + local persistence | Demo & stakeholder validation |
-| **Phase 2 — Launch prep** | Supabase auth/DB, payments, deploy to hosting | Real users & real transactions |
+| **Phase 2 — Launch prep** | Express/Supabase auth + DB, payments, deploy API + frontend | Real users & real transactions |
 | **Phase 3 — Scale** | SMS/email alerts, richer admin, analytics, tracking polish | Growth & operations |
 
 ---

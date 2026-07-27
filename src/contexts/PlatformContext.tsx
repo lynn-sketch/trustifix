@@ -15,6 +15,7 @@ import {
   type Booking,
   type BookingStatus,
 } from "../lib/booking";
+import { apiProviders, isApiConfigured } from "../lib/api";
 import { uid } from "../lib/format";
 import { getProvider, PROVIDERS, type Provider } from "../data/providers";
 import { loadJson, saveJson, STORAGE_KEY } from "../lib/storage";
@@ -573,8 +574,26 @@ export function PlatformProvider({ children }: { children: ReactNode }) {
   const [auctionListings, setAuctionListings] = useState<AuctionListing[]>(
     () => mergeAuctionCatalog(hydrated.auctionListings),
   );
+  const [apiProviderList, setApiProviderList] = useState<Provider[] | null>(null);
   const threadsRef = useRef(threads);
   threadsRef.current = threads;
+
+  useEffect(() => {
+    if (!isApiConfigured) return;
+    let cancelled = false;
+    apiProviders()
+      .then((data) => {
+        if (cancelled) return;
+        const list = (data.providers as Provider[]).filter((p) => p?.id && p?.name);
+        if (list.length) setApiProviderList(list);
+      })
+      .catch(() => {
+        /* keep local catalog if API is down */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     saveJson(STORAGE_KEY, {
@@ -1098,25 +1117,27 @@ export function PlatformProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const catalogProviders = apiProviderList ?? PROVIDERS;
+
   const getEffectiveProvider = useCallback(
     (id: string) => {
-      const base = getProvider(id);
+      const base = catalogProviders.find((p) => p.id === id) ?? getProvider(id);
       if (!base) return undefined;
       const over = verificationOverrides[id];
       const avatarUrl = providerAvatars[id] ?? base.avatarUrl;
       return { ...base, ...over, avatarUrl };
     },
-    [verificationOverrides, providerAvatars],
+    [catalogProviders, verificationOverrides, providerAvatars],
   );
 
   const getEffectiveProviders = useCallback(
     () =>
-      PROVIDERS.map((p) => {
+      catalogProviders.map((p) => {
         const over = verificationOverrides[p.id];
         const avatarUrl = providerAvatars[p.id] ?? p.avatarUrl;
         return { ...p, ...over, avatarUrl };
       }),
-    [verificationOverrides, providerAvatars],
+    [catalogProviders, verificationOverrides, providerAvatars],
   );
 
   const setProviderAvatar = useCallback((providerId: string, avatarUrl: string | undefined) => {

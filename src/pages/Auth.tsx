@@ -15,6 +15,7 @@ export function AuthPage() {
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from ?? "/dashboard";
   const cloud = getBackendMode() === "supabase";
+  const apiMode = getBackendMode() === "api";
   const needsAuthPrompt = Boolean((location.state as { from?: string } | null)?.from);
 
   const [mode, setMode] = useState<Mode>("signin");
@@ -25,6 +26,7 @@ export function AuthPage() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   function goAfterAuth(role: Exclude<UserRole, "guest">) {
     if (role === "admin") navigate("/admin", { replace: true });
@@ -37,26 +39,36 @@ export function AuthPage() {
     goAfterAuth(role);
   }
 
-  function onSignIn(e: FormEvent) {
+  async function onSignIn(e: FormEvent) {
     e.preventDefault();
-    const result = signInWithPassword(login, password);
-    if (result.error || !result.role) {
-      setError(result.error ?? "Could not sign in.");
-      return;
-    }
+    setBusy(true);
     setError(null);
-    goAfterAuth(result.role);
+    try {
+      const result = await signInWithPassword(login, password);
+      if (result.error || !result.role) {
+        setError(result.error ?? "Could not sign in.");
+        return;
+      }
+      goAfterAuth(result.role);
+    } finally {
+      setBusy(false);
+    }
   }
 
-  function onSignUp(e: FormEvent) {
+  async function onSignUp(e: FormEvent) {
     e.preventDefault();
-    const err = signUp({ fullName, username, email, phone, password });
-    if (err) {
-      setError(err);
-      return;
-    }
+    setBusy(true);
     setError(null);
-    navigate(from.startsWith("/auth") ? "/dashboard" : from, { replace: true });
+    try {
+      const err = await signUp({ fullName, username, email, phone, password });
+      if (err) {
+        setError(err);
+        return;
+      }
+      navigate(from.startsWith("/auth") ? "/dashboard" : from, { replace: true });
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -73,7 +85,9 @@ export function AuthPage() {
           <p className="tf-muted">
             {cloud
               ? "Supabase env detected. Local accounts still work for UI testing."
-              : "Use your email, username, phone, and password. Accounts are saved in this browser."}
+              : apiMode
+                ? "Connected to the TrustiFix API. Use your email, username, or phone to sign in."
+                : "Use your email, username, phone, and password. Accounts are saved in this browser."}
           </p>
         )}
 
@@ -137,8 +151,8 @@ export function AuthPage() {
               />
             </label>
             {error && <p className="tf-auth-error">{error}</p>}
-            <button type="submit" className="tf-btn tf-btn-primary">
-              Sign in
+            <button type="submit" className="tf-btn tf-btn-primary" disabled={busy}>
+              {busy ? "Signing in…" : "Sign in"}
             </button>
           </form>
         ) : (
@@ -211,8 +225,8 @@ export function AuthPage() {
               />
             </label>
             {error && <p className="tf-auth-error">{error}</p>}
-            <button type="submit" className="tf-btn tf-btn-primary">
-              Create account
+            <button type="submit" className="tf-btn tf-btn-primary" disabled={busy}>
+              {busy ? "Creating…" : "Create account"}
             </button>
           </form>
         )}
