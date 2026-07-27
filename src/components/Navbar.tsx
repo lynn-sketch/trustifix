@@ -213,11 +213,39 @@ export function Navbar() {
           </Link>
         </div>
 
+        <nav className="tf-nav-desktop" aria-label="Primary">
+          <GateNavLink to="/" end>
+            Home
+          </GateNavLink>
+          <GateNavLink to="/services">Services</GateNavLink>
+          <GateNavLink to="/trust-safety">Trust</GateNavLink>
+          <GateNavLink to="/blog">Blog</GateNavLink>
+          <GateNavLink to="/become-provider">Become a Provider</GateNavLink>
+          {isAuthenticated && user?.role === "customer" && (
+            <GateNavLink to="/dashboard">Dashboard</GateNavLink>
+          )}
+          {isAuthenticated && user?.role === "provider" && (
+            <GateNavLink to="/provider-dashboard">Jobs</GateNavLink>
+          )}
+          {isAuthenticated && user?.role === "admin" && (
+            <GateNavLink to="/admin">Admin</GateNavLink>
+          )}
+        </nav>
+
         <div className="tf-nav-shell-end">
-          {isAuthenticated && user && (
+          {isAuthenticated && user ? (
             <Link to="/profile" className="tf-nav-profile" title="Profile">
               <UserAvatar name={user.fullName} src={user.avatarUrl} size={34} />
             </Link>
+          ) : (
+            <div className="tf-nav-desktop-ctas">
+              <Link to="/auth" className="tf-btn tf-btn-secondary tf-nav-login">
+                Log In
+              </Link>
+              <Link to="/auth" className="tf-btn tf-btn-primary tf-nav-start">
+                Get Started
+              </Link>
+            </div>
           )}
 
           <button
